@@ -1,6 +1,5 @@
 package com.lcwd.electronicstore2.exceptions;
 
-
 import lombok.Builder;
 
 @Builder

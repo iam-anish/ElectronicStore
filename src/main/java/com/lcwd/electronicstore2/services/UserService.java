@@ -1,5 +1,6 @@
 package com.lcwd.electronicstore2.services;
 
+import com.lcwd.electronicstore2.dtos.PageableResponse;
 import com.lcwd.electronicstore2.dtos.UserDto;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface UserService {
     void deleteUser(String userId);
 
     //getAllUser
-    List<UserDto> getALlUsers(int pageNumber,int pageSize,String sortBy,String sortDir);
+    PageableResponse<UserDto> getALlUsers(int pageNumber, int pageSize, String sortBy, String sortDir);
 
     //getSingleUser
     UserDto getUserById(String userId);

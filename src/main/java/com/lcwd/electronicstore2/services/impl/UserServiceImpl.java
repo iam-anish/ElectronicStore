@@ -1,8 +1,10 @@
 package com.lcwd.electronicstore2.services.impl;
 
+import com.lcwd.electronicstore2.dtos.PageableResponse;
 import com.lcwd.electronicstore2.dtos.UserDto;
 import com.lcwd.electronicstore2.entities.User;
 import com.lcwd.electronicstore2.exceptions.ResourceNotFoundException;
+import com.lcwd.electronicstore2.helper.Helper;
 import com.lcwd.electronicstore2.repositories.UserRepositories;
 import com.lcwd.electronicstore2.services.UserService;
 import lombok.Builder;
@@ -68,19 +70,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getALlUsers(int pageNumber,int pageSize,String sortBy,String sortDir) {
+    public PageableResponse<UserDto> getALlUsers(int pageNumber, int pageSize, String sortBy, String sortDir) {
 
         Sort sort = (sortDir.equalsIgnoreCase("decs")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
 
 
 //        Page number defalut start from 0
 
-        Pageable pageable = PageRequest.of(pageNumber, pageSize,sort);
+        Pageable pageable = PageRequest.of(pageNumber-1, pageSize,sort);
         Page<User> page = userRepositories.findAll(pageable);
-        List<User> users = page.getContent();
 
-        List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
-        return userDtoList;
+        //Personal Method
+//        List<User> users = page.getContent();
+//        List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+//
+//        PageableResponse<UserDto> pageableResponse = new PageableResponse<>();
+//        pageableResponse.setContent(userDtoList);
+//        pageableResponse.setPageNumber(page.getNumber());
+//        pageableResponse.setPageSize(page.getSize());
+//        pageableResponse.setTotalPages(page.getTotalPages());
+//        pageableResponse.setTotalElements(page.getTotalElements());
+//        pageableResponse.setLastPage(page.isLast());
+
+
+        //General Method so we can use it anywhere
+        PageableResponse<UserDto> pageableResponse = Helper.getPageableResponse(page,UserDto.class);
+
+        return pageableResponse;
     }
 
     @Override
