@@ -5,7 +5,7 @@ import com.lcwd.electronicstore2.dtos.UserDto;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService{
     //create
     UserDto createUser(UserDto userDto);
 
@@ -26,4 +26,6 @@ public interface UserService {
 
     //searchUser
     List<UserDto> searchUser(String keyword);
+
+    List<UserDto> getUserByIdAndName(String userId,String name);
 }

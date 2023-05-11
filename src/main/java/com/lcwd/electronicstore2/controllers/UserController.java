@@ -1,5 +1,4 @@
 package com.lcwd.electronicstore2.controllers;
-
 import com.lcwd.electronicstore2.dtos.ApiResponseMessage;
 import com.lcwd.electronicstore2.dtos.ImageResponse;
 import com.lcwd.electronicstore2.dtos.PageableResponse;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -74,7 +72,7 @@ public class UserController {
     //get All
     @GetMapping
     public ResponseEntity<PageableResponse<UserDto>> getAllUser(
-            @RequestParam(value = "pageNumber",defaultValue = "0",required = false) int pageNumber,
+            @RequestParam(value = "pageNumber",defaultValue = "1",required = false) int pageNumber,
             @RequestParam(value = "pageSize",defaultValue = "10",required = false) int pageSize,
             @RequestParam(value = "sortBy",defaultValue = "name",required = false) String sortBy,
             @RequestParam(value = "sortDir",defaultValue = "asc",required = false) String sortDir
@@ -86,6 +84,13 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUser(@PathVariable String userId){
         return new ResponseEntity<>(userService.getUserById(userId),HttpStatus.OK);
+    }
+
+    @GetMapping("/getUserByIdAndName/")
+    public List<UserDto> getUserByIdAndName(
+            @RequestParam(value = "userId",defaultValue = "",required = false) String userId,
+            @RequestParam(value = "name",defaultValue = "",required = false) String name){
+        return userService.getUserByIdAndName(userId,name);
     }
 
     //get by email

@@ -8,7 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class ImageNameValidator implements ConstraintValidator<imageNameValidate,String> {
 
-    private Logger logger = LoggerFactory.getLogger(ImageNameValidator.class);
+    private Logger  logger = LoggerFactory.getLogger(ImageNameValidator.class);
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {

@@ -6,20 +6,28 @@ import com.lcwd.electronicstore2.entities.User;
 import com.lcwd.electronicstore2.exceptions.ResourceNotFoundException;
 import com.lcwd.electronicstore2.helper.Helper;
 import com.lcwd.electronicstore2.repositories.UserRepositories;
+import com.lcwd.electronicstore2.services.FileService;
 import com.lcwd.electronicstore2.services.UserService;
 import lombok.Builder;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,6 +37,13 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Value("${user.profile.image.path}")
+    private String imagePath;
+
+    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+
     @Override
     public UserDto createUser(UserDto userDto) {
         //genarate userId in String Format
@@ -43,7 +58,6 @@ public class UserServiceImpl implements UserService {
 
         return userDto1;
     }
-
 
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
@@ -64,6 +78,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String userId) {
         User user = userRepositories.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found with this Id !!"));
+
+        //delete user profile image
+        String fullPath = imagePath + user.getImageName();
+
+        try{
+            Path path = Paths.get(fullPath);
+            Files.delete(path);
+        }catch (NoSuchFileException ex){
+            logger.info("User image not found in folder");
+            ex.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
         //deleteUser
         userRepositories.delete(user);
@@ -98,7 +126,6 @@ public class UserServiceImpl implements UserService {
 
         return pageableResponse;
     }
-
     @Override
     public UserDto getUserById(String userId) {
         User user = userRepositories.findById(userId).orElseThrow(()->new ResourceNotFoundException("User Not Found!!"));
@@ -116,6 +143,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> searchUser(String keyword) {
         List<User> users = userRepositories.findByNameContaining(keyword);
+        List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+        return userDtoList;
+    }
+
+    @Override
+    public List<UserDto> getUserByIdAndName(String userId,String name){
+        List<User> users = userRepositories.findByUserIdOrNameContaining(userId,name);
         List<UserDto> userDtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
         return userDtoList;
     }

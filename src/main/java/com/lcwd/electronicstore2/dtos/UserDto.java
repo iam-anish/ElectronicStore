@@ -2,7 +2,6 @@ package com.lcwd.electronicstore2.dtos;
 
 import com.lcwd.electronicstore2.validate.imageNameValidate;
 import lombok.*;
-
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.validation.constraints.*;
@@ -12,7 +11,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class UserDto{
     private String userId;
     @Size(min = 3,max = 15,message = "Invalid Name !!")
     private String name;
