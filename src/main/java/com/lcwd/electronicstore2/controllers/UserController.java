@@ -105,7 +105,6 @@ public class UserController {
         return new ResponseEntity<>(userService.searchUser(keyword),HttpStatus.OK);
     }
 
-
     //upload user Image
     @PostMapping("/image/{userId}")
     public ResponseEntity<ImageResponse> uploadUserImage(
