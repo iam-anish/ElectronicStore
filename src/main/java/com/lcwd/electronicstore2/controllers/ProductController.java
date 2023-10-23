@@ -7,13 +7,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -27,18 +30,21 @@ public class ProductController {
     @Value("${product.image.path}")
     private String imagePath;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto){
         ProductDto productDto1 = productService.create(productDto);
         return new ResponseEntity<>(productDto1, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{productId}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable String productId,@RequestBody ProductDto productDto){
         ProductDto productDto1 = productService.update(productDto,productId);
         return new ResponseEntity<>(productDto1, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponseMessage> deleteProduct(@PathVariable String productId){
         productService.delete(productId);
@@ -86,7 +92,9 @@ public class ProductController {
         return new ResponseEntity<>(pageableResponse, HttpStatus.OK);
     }
 
+
     //upload image
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/image/{productId}")
     public ResponseEntity<ImageResponse> uploadProductImage(
             @PathVariable String productId,
@@ -108,6 +116,18 @@ public class ProductController {
         InputStream resource = fileService.getResource(imagePath,productDto.getProductImageName());
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         StreamUtils.copy(resource,response.getOutputStream());
+    }
+
+    @DeleteMapping("image/{proproductImageNameductId}")
+    public ResponseEntity<Boolean> deleteProductImage(@PathVariable String productImageName) throws FileNotFoundException {
+        Boolean b = fileService.deleteFile(imagePath,productImageName);
+        return new ResponseEntity<>(b,HttpStatus.OK);
+    }
+
+    @PutMapping("image/{productId}")
+    public ResponseEntity<Boolean> updateProductImage(@PathVariable String productId,@RequestParam("productImage") MultipartFile image) throws FileNotFoundException {
+        Boolean b = fileService.updateFIle(image,imagePath,productId);
+        return new ResponseEntity<>(b,HttpStatus.OK);
     }
 
 }

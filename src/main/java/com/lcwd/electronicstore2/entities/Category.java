@@ -1,5 +1,6 @@
 package com.lcwd.electronicstore2.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +22,12 @@ public class Category{
     private String categoryId;
     @Column(name = "category_title",length = 60,nullable = false)
     private String title;
-    @Column(name = "category_desc",length = 500)
+
+    @Column(name = "category_desc")
     private String description;
 
     private String coverImage;
     @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Product> products = new ArrayList<>();
 }

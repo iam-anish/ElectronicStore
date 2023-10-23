@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
               allErrors.stream().forEach(ObjectError ->{
                       String message = ObjectError.getDefaultMessage();
                       String feild = ((FieldError)ObjectError).getField();
-                      response.put(message,feild);
+                      response.put(feild,message);
               });
               return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }

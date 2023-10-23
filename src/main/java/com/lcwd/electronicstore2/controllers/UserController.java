@@ -6,6 +6,8 @@ import com.lcwd.electronicstore2.dtos.UserDto;
 import com.lcwd.electronicstore2.entities.User;
 import com.lcwd.electronicstore2.services.FileService;
 import com.lcwd.electronicstore2.services.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
+@Api(value = "UserController",description = "RestFull Apis to perform users related tasks.")
 public class UserController {
 
     @Autowired
@@ -70,6 +73,7 @@ public class UserController {
     }
 
     //get All
+    @ApiOperation(value = "Get All Users")
     @GetMapping
     public ResponseEntity<PageableResponse<UserDto>> getAllUser(
             @RequestParam(value = "pageNumber",defaultValue = "1",required = false) int pageNumber,

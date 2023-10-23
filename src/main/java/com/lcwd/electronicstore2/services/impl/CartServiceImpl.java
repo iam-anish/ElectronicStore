@@ -1,5 +1,4 @@
 package com.lcwd.electronicstore2.services.impl;
-
 import com.lcwd.electronicstore2.dtos.AddItemToCart;
 import com.lcwd.electronicstore2.dtos.CartDto;
 import com.lcwd.electronicstore2.entities.Cart;
@@ -16,7 +15,6 @@ import com.lcwd.electronicstore2.services.CartService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -114,9 +112,11 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto getCartByUser(String userId) {
+    public Cart getCartByUser(String userId) {
         User user  = userRepositories.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found !!"));
         Cart cart  = cartRepositories.findByUser(user).orElseThrow(()->new ResourceNotFoundException("Cart not found !!"));
-        return modelMapper.map(cart,CartDto.class);
+//        return modelMapper.map(cart,CartDto.class);
+        return cart;
     }
 }
+

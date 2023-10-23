@@ -4,12 +4,16 @@ import com.lcwd.electronicstore2.dtos.ApiResponseMessage;
 import com.lcwd.electronicstore2.dtos.CategoryDto;
 import com.lcwd.electronicstore2.dtos.PageableResponse;
 import com.lcwd.electronicstore2.dtos.ProductDto;
+import com.lcwd.electronicstore2.entities.Category;
 import com.lcwd.electronicstore2.services.CategoryService;
 import com.lcwd.electronicstore2.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -23,6 +27,7 @@ public class CategoryController {
     private ProductService productService;
 
     //create
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto){
        CategoryDto categoryDto1 =   categoryService.create(categoryDto);
@@ -30,6 +35,7 @@ public class CategoryController {
     }
 
     //update
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,
                                                       @PathVariable String categoryId){
@@ -38,6 +44,7 @@ public class CategoryController {
     }
 
     //delete
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<ApiResponseMessage> deleteCategory(@PathVariable String categoryId){
         categoryService.delete(categoryId);
@@ -95,5 +102,12 @@ public class CategoryController {
     ){
         PageableResponse<ProductDto> response  = productService.getAllOfCategory(categoryId,pageNumber,pageSize,sortBy,sortDir);
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public  ResponseEntity<List<Category>> search(@RequestParam(value = "search",required = false) String qry){
+
+        List<Category> categoryList = categoryService.search(qry);
+        return new ResponseEntity<>(categoryList,HttpStatus.OK);
     }
 }

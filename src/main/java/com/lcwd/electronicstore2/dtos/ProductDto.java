@@ -1,5 +1,6 @@
 package com.lcwd.electronicstore2.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ public class ProductDto {
     private int price;
     private int discountedPrice;
     private int quantity;
+
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "IST")
     private Date addedDate;
     private boolean live;
     private boolean stock;

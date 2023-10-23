@@ -2,9 +2,11 @@ package com.lcwd.electronicstore2.services.impl;
 
 import com.lcwd.electronicstore2.dtos.PageableResponse;
 import com.lcwd.electronicstore2.dtos.UserDto;
+import com.lcwd.electronicstore2.entities.Role;
 import com.lcwd.electronicstore2.entities.User;
 import com.lcwd.electronicstore2.exceptions.ResourceNotFoundException;
 import com.lcwd.electronicstore2.helper.Helper;
+import com.lcwd.electronicstore2.repositories.RoleRepositories;
 import com.lcwd.electronicstore2.repositories.UserRepositories;
 import com.lcwd.electronicstore2.services.FileService;
 import com.lcwd.electronicstore2.services.UserService;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,6 +29,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,8 +42,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Value("${user.profile.image.path}")
     private String imagePath;
+
+    @Value("${normal.role.id}")
+    private String normalRoleId;
+
+    @Autowired
+    private RoleRepositories roleRepositories;
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -50,8 +63,15 @@ public class UserServiceImpl implements UserService {
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
 
+        //encoding passwor
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         //dto -> entity
         User user = dtoToEntity(userDto);
+
+        //fetch role of normal and set it to user
+        Role role = roleRepositories.findById(normalRoleId).get();
+        user.getRoles().add(role);
+
         User savedUser = userRepositories.save(user);
         //entity -> dto
         UserDto userDto1 = entityToDto(savedUser);
@@ -64,7 +84,9 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepositories.findById(userId).orElseThrow(()->new ResourceNotFoundException("User not found with this Id !!"));
         user.setName(userDto.getName());
-        user.setPassword(userDto.getPassword());
+        if (!userDto.getPassword().equalsIgnoreCase(user.getPassword())){
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        }
         user.setAbout(userDto.getAbout());
         user.setGender(userDto.getGender());
         user.setImageName(userDto.getImageName());
@@ -72,6 +94,7 @@ public class UserServiceImpl implements UserService {
         //save updated user
         User updatedUser = userRepositories.save(user);
         UserDto updatedDto = entityToDto(updatedUser);
+
         return updatedDto;
     }
 
@@ -135,9 +158,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByEmail(String email){
-        User user = userRepositories.findByEmail(email);
+        Optional<User> user = userRepositories.findByEmail(email);
 
-        return entityToDto(user);
+        return modelMapper.map(user,UserDto.class);
+    }
+
+    @Override
+    public Optional<User> findUserByEmailOptional(String email) {
+        return userRepositories.findByEmail(email);
     }
 
     @Override

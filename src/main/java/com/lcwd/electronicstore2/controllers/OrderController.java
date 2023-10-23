@@ -4,18 +4,19 @@ import com.lcwd.electronicstore2.dtos.ApiResponseMessage;
 import com.lcwd.electronicstore2.dtos.OrderDto;
 import com.lcwd.electronicstore2.dtos.PageableResponse;
 import com.lcwd.electronicstore2.dtos.createOrderRequest;
+import com.lcwd.electronicstore2.entities.Order;
 import com.lcwd.electronicstore2.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
-public class OrderController {
+public class OrderController{
 
     @Autowired
     private OrderService orderService;
@@ -27,6 +28,7 @@ public class OrderController {
     }
 
     //delete order
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{orderId}")
     public ResponseEntity<ApiResponseMessage> deleteOrder(@PathVariable String orderId){
         orderService.removeOrder(orderId);
@@ -57,4 +59,9 @@ public class OrderController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @PutMapping("/{orderId}")
+    public ResponseEntity<OrderDto> updateOrder(@RequestBody OrderDto orderDto){
+        OrderDto orderDto1 = orderService.updateOrder(orderDto);
+        return new ResponseEntity<>(orderDto1,HttpStatus.OK);
+    }
 }

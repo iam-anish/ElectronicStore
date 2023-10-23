@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -49,6 +50,8 @@ public class CategoryImpl implements CategoryService{
         return modelMapper.map(updatedCategory,CategoryDto.class);
     }
 
+
+
     @Override
     public void delete(String categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category not found Exception"));
@@ -57,8 +60,8 @@ public class CategoryImpl implements CategoryService{
 
     @Override
     public PageableResponse<CategoryDto> getAll(int pageNumber,int pageSize,String sortBy,String sortDir) {
-        Sort sort = (sortDir.equalsIgnoreCase("desc")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending()) ;
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        Sort sort = (sortDir.equalsIgnoreCase("decs")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
         Page<Category> page = categoryRepository.findAll(pageable);
         PageableResponse<CategoryDto> pageableResponse = Helper.getPageableResponse(page,CategoryDto.class);
         return pageableResponse;
@@ -68,5 +71,11 @@ public class CategoryImpl implements CategoryService{
     public CategoryDto get(String categoryId) {
         Category category = categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category not found Exception"));
         return modelMapper.map(category,CategoryDto.class);
+    }
+
+    @Override
+    public List<Category> search(String qry) {
+        List<Category> categoryList = categoryRepository.findBySomeFieldContaining(qry);
+        return categoryList;
     }
 }

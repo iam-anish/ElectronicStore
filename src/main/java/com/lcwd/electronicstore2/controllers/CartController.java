@@ -3,6 +3,7 @@ package com.lcwd.electronicstore2.controllers;
 import com.lcwd.electronicstore2.dtos.AddItemToCart;
 import com.lcwd.electronicstore2.dtos.ApiResponseMessage;
 import com.lcwd.electronicstore2.dtos.CartDto;
+import com.lcwd.electronicstore2.entities.Cart;
 import com.lcwd.electronicstore2.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,8 +47,8 @@ public class CartController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<CartDto> getCart(@PathVariable String userId){
-        CartDto cartDto = cartService.getCartByUser(userId);
+    public ResponseEntity<Cart> getCart(@PathVariable String userId){
+        Cart cartDto = cartService.getCartByUser(userId);
         return new ResponseEntity<>(cartDto,HttpStatus.OK);
     }
 }

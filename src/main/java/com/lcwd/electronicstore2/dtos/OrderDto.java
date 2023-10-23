@@ -1,5 +1,6 @@
 package com.lcwd.electronicstore2.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lcwd.electronicstore2.entities.OrderItem;
 import com.lcwd.electronicstore2.entities.User;
 import lombok.*;
@@ -30,11 +31,13 @@ public class OrderDto {
 
     private String billingName;
 
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "IST")
     private Date orderedDate;
 
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "IST")
     private Date diliveredDate;
 
-//    private UserDto user;
+    private UserDto user;
 
     private List<OrderItemDto> orderItems = new ArrayList<>();
 }

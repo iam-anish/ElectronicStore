@@ -1,7 +1,6 @@
 package com.lcwd.electronicstore2.entities;
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,9 +23,11 @@ public class Cart {
     private Date createdDate;
 
     @OneToOne
+    @JsonManagedReference
     private User user;
 
     @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL,orphanRemoval = true)
+    @JsonManagedReference
     private List<CartItem> items = new ArrayList<>();
 
 }

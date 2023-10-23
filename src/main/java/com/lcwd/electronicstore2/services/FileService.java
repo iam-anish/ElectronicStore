@@ -11,4 +11,8 @@ public interface FileService {
     String uploadFile(MultipartFile file,String path) throws IOException;
 
     InputStream getResource(String path,String name) throws FileNotFoundException;
+
+    Boolean deleteFile(String path,String productImageName) throws  FileNotFoundException;
+
+    Boolean updateFIle(MultipartFile file,String path,String productId) throws FileNotFoundException;
 }

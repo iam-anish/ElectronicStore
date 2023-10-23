@@ -1,8 +1,8 @@
 package com.lcwd.electronicstore2.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
