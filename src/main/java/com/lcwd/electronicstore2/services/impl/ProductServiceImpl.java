@@ -46,6 +46,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = modelMapper.map(productDto,Product.class);
         String productId = UUID.randomUUID().toString();
         product.setProductId(productId);
+        product.setSysStatus("A");
         product.setAddedDate(new Date());
         Product savedProduct =  productRepositories.save(product);
         return modelMapper.map(savedProduct,ProductDto.class);
@@ -57,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
         product.setTitle(productDto.getTitle());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
+        product.setSysStatus("A");
         product.setQuantity(productDto.getQuantity());
         product.setDiscountedPrice(productDto.getDiscountedPrice());
         product.setAddedDate(productDto.getAddedDate());
@@ -81,7 +83,8 @@ public class ProductServiceImpl implements ProductService {
         catch (IOException e){
             e.printStackTrace();
         }
-        productRepositories.delete(product);
+        product.setSysStatus("D");
+        productRepositories.save(product);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
 
         Sort sort = (sortDir.equalsIgnoreCase("desc")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
-        Page<Product> page = productRepositories.findAll(pageable);
+        Page<Product> page = productRepositories.findAllBySysStatus("A",pageable);
 
         return Helper.getPageableResponse(page,ProductDto.class);
     }
@@ -104,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
     public PageableResponse<ProductDto> getAllLive(int pageNumber,int pageSize,String sortBy,String sortDir) {
         Sort sort = (sortDir.equalsIgnoreCase("desc")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
-        Page<Product> page = productRepositories.findByLiveTrue(pageable);
+        Page<Product> page = productRepositories.findByLiveTrueAndSysStatus("A",pageable);
         return Helper.getPageableResponse(page,ProductDto.class);
     }
 
@@ -147,7 +150,7 @@ public class ProductServiceImpl implements ProductService {
         Sort sort = (sortDir.equalsIgnoreCase("desc")) ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
         Category category = categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category not found !!"));
-        Page<Product> page = productRepositories.findByCategory(category,pageable);
+        Page<Product> page = productRepositories.findByCategoryAndSysStatus(category,"A",pageable);
 
         return Helper.getPageableResponse(page,ProductDto.class);
     }

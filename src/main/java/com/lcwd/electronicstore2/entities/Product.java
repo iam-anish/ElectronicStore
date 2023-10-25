@@ -27,11 +27,14 @@ public class Product {
     private String description;
 
     private int price;
+
     private int discountedPrice;
 
     private int quantity;
 
     private Date addedDate;
+
+    private String sysStatus;
 
     private boolean live;
 
